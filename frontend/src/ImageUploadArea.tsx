@@ -1,5 +1,5 @@
 import React, { useState, useRef, ChangeEvent, DragEvent } from 'react';
-import { Images, Eraser, ZoomIn, AlertCircle } from 'lucide-react';
+import { Images, Eraser, /*ZoomIn,*/ AlertCircle } from 'lucide-react';
 import './ImageUploadArea.css'
 
 interface ImageUploadAreaProps {
@@ -104,116 +104,119 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({ onImageSelected }) =>
   };
 
   return (
-    <div className=" inputConMain">
-      <div className="inputAreaContent">
-        <h2 className="inputConMainTitle">Image Upload</h2>
-        <p>Drag and drop your medical image here or click the input dialog to browse an image from device.</p>
-        <p>Supported formats: JPEG, PNG (max 10MB)</p>
+    <>
+      <img src=".\public\transparent.png" alt="transparent" style={{height:'100vh', width:'100%', pointerEvents:'none', zIndex:'-10'}}/>
+      <div className=" inputConMain">
+        <div className="inputAreaContent">
+          <h2 className="inputConMainTitle">Image Upload</h2>
+          <p>Drag and drop your medical image here or click the input dialog to browse an image from device.</p>
+          <p>Supported formats: JPEG, PNG (max 10MB)</p>
 
-          {/* Image details */}
-          {selectedImage && (
-            <div className="bg-gray-50 p-3 rounded text-sm text-gray-600">
-              <h2 style={{marginTop:"1.6em"}}>
-                Image Details
-              </h2>
-              <p>
-                <strong>File:</strong> {selectedImage.name}
-              </p>
-              {/* We don't have the full File object now, but we can display the name and URL */}
-              <p><strong>Preview URL:</strong></p>
-              <p style={{maxWidth:'500px', overflowX:'scroll'}}> {selectedImage.url}</p>
-            </div>
-          )}
-
-      </div>
-
-      {/* Main upload area */}
-      <div className="mainUploadAreaCon">
-        <div
-          className={`mainUploadArea  ${
-            isDragging ? 'inputDraggingTrue' : 'inputDraggingFalse'
-          } mainUploadArea`}
-          onClick={() => fileInputRef.current?.click()}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept=".jpg,.jpeg,.png,.dcm,.tiff"
-            className="hidden"
-          />
-
-          {previewUrl ? (
-            <div className="previewImage relative">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="max-w-none max-h-none w-auto h-auto"
-                style={{ maxWidth: '100%', maxHeight: '100%' }}
-              />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeImage();
-                }}
-                className="imageClearButton"
-              >
-                <Eraser size={20} /> Clear Image
-              </button>
-            </div>
-          ) : (
-            <>
-              <Images className="inputImageIcon" />
-              <p className="text-[19px] font-[650] uppercase py-2 px-4 rounded-md">
-                Click to browse
-              </p>
-              <p className="text-gray-400 text-sm mt-1">
-                or drop files here
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Error message */}
-      {error && (
-        <div className="flex items-center text-red-500 bg-red-50 p-3 rounded">
-          <AlertCircle size={16} className="mr-2" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Thumbnail gallery
-      {thumbnails.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Recent uploads</h3>
-          <div className="flex space-x-2 overflow-x-auto pb-2">
-            {thumbnails.map((thumb, index) => (
-              <div
-                key={index}
-                className={`relative h-16 w-16 rounded border overflow-hidden cursor-pointer ${
-                  previewUrl === thumb.url ? 'ring-2 ring-blue-500' : ''
-                }`}
-                onClick={() => selectThumbnail(thumb)}
-              >
-                <img
-                  src={thumb.url}
-                  alt={`Thumbnail ${index}`}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 flex items-center justify-center transition-all duration-200">
-                  <ZoomIn size={16} className="text-white opacity-0 hover:opacity-100" />
-                </div>
+            {/* Image details */}
+            {selectedImage && (
+              <div className="bg-gray-50 p-3 rounded text-sm text-gray-600">
+                <h2 style={{marginTop:"1.6em"}}>
+                  Image Details
+                </h2>
+                <p>
+                  <strong>File:</strong> {selectedImage.name}
+                </p>
+                {/* We don't have the full File object now, but we can display the name and URL */}
+                <p><strong>Preview URL:</strong></p>
+                <p style={{maxWidth:'500px', overflowX:'scroll'}}> {selectedImage.url}</p>
               </div>
-            ))}
+            )}
+
+        </div>
+
+        {/* Main upload area */}
+        <div className="mainUploadAreaCon">
+          <div
+            className={`mainUploadArea  ${
+              isDragging ? 'inputDraggingTrue' : 'inputDraggingFalse'
+            } mainUploadArea`}
+            onClick={() => fileInputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".jpg,.jpeg,.png,.dcm,.tiff"
+              className="hidden"
+            />
+
+            {previewUrl ? (
+              <div className="previewImage relative">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="max-w-none max-h-none w-auto h-auto"
+                  style={{ maxWidth: '100%', maxHeight: '100%' }}
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeImage();
+                  }}
+                  className="imageClearButton"
+                >
+                  <Eraser size={20} /> Clear Image
+                </button>
+              </div>
+            ) : (
+              <>
+                <Images className="inputImageIcon" />
+                <p className="text-[19px] font-[650] uppercase py-2 px-4 rounded-md">
+                  Click to browse
+                </p>
+                <p className="text-gray-400 text-sm mt-1">
+                  or drop files here
+                </p>
+              </>
+            )}
           </div>
         </div>
-      )} */}
 
-    </div>
+        {/* Error message */}
+        {error && (
+          <div className="flex items-center text-red-500 bg-red-50 p-3 rounded">
+            <AlertCircle size={16} className="mr-2" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Thumbnail gallery
+        {thumbnails.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Recent uploads</h3>
+            <div className="flex space-x-2 overflow-x-auto pb-2">
+              {thumbnails.map((thumb, index) => (
+                <div
+                  key={index}
+                  className={`relative h-16 w-16 rounded border overflow-hidden cursor-pointer ${
+                    previewUrl === thumb.url ? 'ring-2 ring-blue-500' : ''
+                  }`}
+                  onClick={() => selectThumbnail(thumb)}
+                >
+                  <img
+                    src={thumb.url}
+                    alt={`Thumbnail ${index}`}
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 flex items-center justify-center transition-all duration-200">
+                    <ZoomIn size={16} className="text-white opacity-0 hover:opacity-100" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )} */}
+
+      </div>
+    </>
   );
 };
 

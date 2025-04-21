@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import { Menu, Brain } from 'lucide-react';
+import { Ellipsis, Brain } from 'lucide-react';
 import './LandingPage.css'
 
 const LandingPage: React.FC = () => {
@@ -11,23 +11,11 @@ const LandingPage: React.FC = () => {
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const [modelLoaded, setModelLoaded] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [showContent, setShowContent] = useState(false); // New state to control transition
+  const [loadingComplete, setLoadingComplete] = useState(false);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // Add transition effect when model is loaded
-  useEffect(() => {
-    if (modelLoaded) {
-      // Short delay before showing content for smooth transition
-      const timer = setTimeout(() => {
-        setShowContent(true);
-      }, 300);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [modelLoaded]);
-  
   // Handle scroll events
   useEffect(() => {
     const handleScroll = (): void => {
@@ -45,7 +33,7 @@ const LandingPage: React.FC = () => {
     
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [modelLoaded, isDragging]);
+  }, [isDragging]);
   
   // Initialize Three.js scene - only once
   useEffect(() => {
@@ -55,6 +43,28 @@ const LandingPage: React.FC = () => {
     while (mountRef.current.firstChild) {
       mountRef.current.removeChild(mountRef.current.firstChild);
     }
+    
+    // Simulate progress even if the real progress is stuck
+    const simulateProgressAnimation = () => {
+      setLoadingProgress(prev => {
+        // If we're already at 100%, don't update
+        if (prev >= 100) return prev;
+        
+        // Simulate incremental loading with diminishing returns
+        // Move faster at the beginning, slower towards the end
+        const increment = Math.max(0.5, (100 - prev) * 0.03);
+        const newProgress = Math.min(99, prev + increment);
+        return newProgress;
+      });
+      
+      // Continue animation as long as we haven't completed loading
+      if (!loadingComplete) {
+        animationFrameRef.current = requestAnimationFrame(simulateProgressAnimation);
+      }
+    };
+    
+    // Start the progress animation immediately
+    animationFrameRef.current = requestAnimationFrame(simulateProgressAnimation);
     
     // Initialize scene, camera, and renderer
     const scene = new THREE.Scene();
@@ -84,7 +94,7 @@ const LandingPage: React.FC = () => {
     scene.add(frontLight);
     
     const brainMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xed2d2d2,
+        color: 0xef2f2f2,
         roughness: 0.9,
         metalness: 0.4,
         transparent: true,
@@ -103,8 +113,8 @@ const LandingPage: React.FC = () => {
     objLoader.load(
       '/assets/Brain_v4.obj',
       (object) => {
-        const box = new THREE.Box3().setFromObject(object);
-        const center = box.getCenter(new THREE.Vector3());
+        // const box = new THREE.Box3().setFromObject(object);
+        // const center = box.getCenter(new THREE.Vector3());
         // Apply the material to all meshes in the loaded object
         object.traverse((child) => {
           if (child instanceof THREE.Mesh) {
@@ -134,19 +144,51 @@ const LandingPage: React.FC = () => {
         // Store a reference to the brain model for animation
         brainRef.current = object;
         
-        // Signal model is loaded
-        console.log("Model loaded successfully, updating state...");
-        setModelLoaded(true);
+        // Cancel the simulated progress animation
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        
+        // Set progress to 100% when model is fully loaded
+        setLoadingProgress(100);
+        
+        // Signal model is loaded after a delay to let progress animation complete
+        console.log("Model loaded successfully, transitioning in 500ms...");
+        
+        // Wait until we're sure the progress has updated to 100% before completing
+        setTimeout(() => {
+          setLoadingComplete(true);
+        },500);
       },
       // Progress callback
       (xhr) => {
-        const progress = (xhr.loaded / xhr.total) * 100;
-        console.log(`${progress.toFixed(2)}% loaded`);
-        setLoadingProgress(Math.round(progress));
+        if (xhr.lengthComputable) {
+          // Get actual loading progress but don't rely solely on it
+          const actualProgress = Math.round((xhr.loaded / xhr.total) * 100);
+          console.log(`Actual load progress: ${actualProgress}%`);
+          
+          // We don't directly set the progress here because we're using the simulated progress
+          // This is a fallback in case the xhr callbacks are working correctly
+          if (actualProgress > loadingProgress + 5) {
+            setLoadingProgress(actualProgress);
+          }
+        }
       },
       // Error callback
       (error) => {
         console.error('An error happened while loading the model:', error);
+        
+        // Cancel the animation frame if there's an error
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        
+        // If there's an error, still exit the loading screen
+        setLoadingProgress(100);
+        
+        setTimeout(() => {
+          setLoadingComplete(true);
+        }, 1000);
       }
     );
     
@@ -235,6 +277,11 @@ const LandingPage: React.FC = () => {
     
     // Cleanup
     return () => {
+      // Cancel any pending animation frames
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      
       window.removeEventListener('resize', handleResize);
       renderer.domElement.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mousemove', onMouseMove);
@@ -263,64 +310,61 @@ const LandingPage: React.FC = () => {
       renderer.dispose();
     };
   }, []);
-  
-  // Loading screen component
-  // if (!showContent) {
-  //   return (
-  //     <div className="loader-screen">
-  //       <div className="loader-title">Unified Cancer Classification</div>
-  //       <div className="loader-brain">
-  //         <Brain size={64} color="#ed2d2d" />
-  //       </div>
-  //       <div className="loader-text">Loading 3D Model</div>
-  //       <div className="loader-progress">
-  //         <div
-  //           className="loader-bar"
-  //           style={{ width: `${loadingProgress}%` }}
-  //         ></div>
-  //       </div>
-  //       <div className="loader-percentage">{loadingProgress}%</div>
-  //     </div>
-  //   );
-  // }
 
-  // Main content when model is loaded
   return (
-    <div className="landing-container loaded">
-      {/* Navbar */}
-      <div className="navbar">
-        <div className="navbar-logo">
-          <Brain size={32}/> UCC
+    <div className="app-container">
+      {/* Always render both components, but control visibility with CSS */}
+      
+      {/* Loading Screen - controlled by CSS */}
+      <div className={`loader-screen ${loadingProgress === 100 && loadingComplete ? 'fade-out' : ''}`}>
+        <div className="loader-title">Unified Cancer Classification</div>
+        <div className="loader-brain">
+          <Brain size={64} color="#ed2d2d" />
         </div>
-        <button className="navbar-menu-button">
-          <Menu size={42} strokeWidth={2}/>
-        </button>
+        <div className="loader-text">Loading...</div>
+        <div className="loader-progress">
+          <div
+            className="loader-bar"
+            style={{ width: `${loadingProgress}%` }}
+          ></div>
+        </div>
+        <div className="loader-percentage">{loadingProgress}%</div>
       </div>
-      
-      {/* Main Title */}
-      <div 
-        ref={titleRef}
-        className="main-title"
-      >
-        <h1 className="title-heading">
-          Unified Cancer Classification
-        </h1>
-        {/* <p className="title-subheading">
-          Advanced CNN technology for precise brain tumor analysis
-        </p> */}
-      </div>
-      
-      {/* 3D Brain Container - Positioned at bottom with only top 60% visible */}
-      <div 
-        ref={mountRef} 
-        className="brain-container"
-      />
-      
-      {/* Scroll indicator */}
-      <div className="scroll-indicator">
-        <p className="scroll-text">Scroll to explore</p>
-        <div className="scroll-icon">
-          <div className="scroll-dot"></div>
+
+      {/* Main Content - always rendered but initially hidden */}
+      <div className={`landing-container ${loadingComplete ? 'fade-in' : ''}`}>
+        {/* Navbar */}
+        <div className="navbar">
+          <div className="navbar-logo">
+            <Brain size={32}/> UCC
+          </div>
+          <button className="navbar-menu-button">
+            <Ellipsis size={42} />
+          </button>
+        </div>
+        
+        {/* Main Title */}
+        <div 
+          ref={titleRef}
+          className="main-title"
+        >
+          <h1 className="title-heading">
+            Unified Cancer Classification
+          </h1>
+        </div>
+        
+        {/* 3D Brain Container - Positioned at bottom with only top 60% visible */}
+        <div 
+          ref={mountRef} 
+          className="brain-container"
+        />
+        
+        {/* Scroll indicator */}
+        <div className="scroll-indicator">
+          <p className="scroll-text">Scroll to explore</p>
+          <div className="scroll-icon">
+            <div className="scroll-dot"></div>
+          </div>
         </div>
       </div>
     </div>
