@@ -35,7 +35,7 @@ function App(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline' | 'error'>('checking');
   const [showResults, setShowResults] = useState<boolean>(false);
-  const [modelReady, setModelReady] = useState<boolean>(false);
+  // const [modelReady, setModelReady] = useState<boolean>(false);
   
   // App loading state (separate from analysis loading)
   const [appLoading, setAppLoading] = useState<boolean>(true);
@@ -43,9 +43,8 @@ function App(): JSX.Element {
   const [assetsLoaded, setAssetsLoaded] = useState<boolean>(false);
 
   //Lenis
-  const lenis = useLenis(({ scroll }) => {
-    // called every scroll
-  })
+  useLenis(() => {
+  });
 
   // Check if the backend is running on component mount
   useEffect(() => {
@@ -163,7 +162,7 @@ function App(): JSX.Element {
       <div className={`app-content ${!appLoading ? 'visible' : ''}`}>
         <LandingPage 
           onLoadingProgress={handleLoadingProgress} 
-          onModelReady={() => setModelReady(true)} 
+          // onModelReady={() => setModelReady(true)} 
         />
         
         {/* Image upload section */}

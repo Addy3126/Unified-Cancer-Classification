@@ -6,7 +6,7 @@ import './LandingPage.css';
 
 interface LandingPageProps {
   onLoadingProgress: (progress: number) => void;
-  onModelReady: () => void;
+  // onModelReady: () => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
