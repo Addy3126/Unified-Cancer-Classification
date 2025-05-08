@@ -3,7 +3,8 @@ import ImageUploadArea from './ImageUploadArea'
 import { useState, useEffect, JSX } from 'react';
 import LandingPage from './LandingPage';
 import AnalysisResults from './AnalysisResults';
-
+import Loader from './Loader';
+import { ReactLenis, useLenis } from 'lenis/react'
 // Backend API URL
 const API_URL = 'http://localhost:5000/api';
 
@@ -34,6 +35,17 @@ function App(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline' | 'error'>('checking');
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [modelReady, setModelReady] = useState<boolean>(false);
+  
+  // App loading state (separate from analysis loading)
+  const [appLoading, setAppLoading] = useState<boolean>(true);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [assetsLoaded, setAssetsLoaded] = useState<boolean>(false);
+
+  //Lenis
+  const lenis = useLenis(({ scroll }) => {
+    // called every scroll
+  })
 
   // Check if the backend is running on component mount
   useEffect(() => {
@@ -58,8 +70,14 @@ function App(): JSX.Element {
       }
     };
 
+    if (appLoading) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+
     checkServerStatus();
-  }, []);
+  }, [appLoading]);
 
   const handleImageSelected = async (file: File | null) => {
     if (!file) {
@@ -84,6 +102,7 @@ function App(): JSX.Element {
     }
 
     setLoading(true);
+    
     setError(null);
     setPrediction(null);
     setShowResults(false);
@@ -116,22 +135,50 @@ function App(): JSX.Element {
     }
   };
 
+  // Handler for brain model loading progress updates
+  const handleLoadingProgress = (progress: number) => {
+    setLoadingProgress(progress);
+    
+    // Only transition when truly at 100%
+    if (progress >= 100) {
+      // Small delay to ensure model has rendered
+      setTimeout(() => {
+        setAssetsLoaded(true);
+        // Remove nested setTimeout and reduce delay
+        setAppLoading(false);
+      }, 500);
+    }
+  };
+
   return (
-    <>
-      <LandingPage/>
-      
-      {/* Image upload section */}
-      <ImageUploadArea onImageSelected={handleImageSelected} />
-      
-      {/* Analysis Results component */}
-      <AnalysisResults 
-        prediction={prediction}
-        loading={loading}
-        error={error}
-        showResults={showResults}
-        serverStatus={serverStatus}
+    <ReactLenis root>
+      {/* Main application loader */}
+      <Loader 
+        progress={loadingProgress} 
+        isComplete={assetsLoaded} 
+        isVisible={appLoading}
       />
-    </>
+      
+      {/* Main content (visible when loading completes) */}
+      <div className={`app-content ${!appLoading ? 'visible' : ''}`}>
+        <LandingPage 
+          onLoadingProgress={handleLoadingProgress} 
+          onModelReady={() => setModelReady(true)} 
+        />
+        
+        {/* Image upload section */}
+        <ImageUploadArea onImageSelected={handleImageSelected} />
+        
+        {/* Analysis Results component */}
+        <AnalysisResults 
+          prediction={prediction}
+          loading={loading}
+          error={error}
+          showResults={showResults}
+          serverStatus={serverStatus}
+        />
+      </div>
+    </ReactLenis>
   );
 }
 

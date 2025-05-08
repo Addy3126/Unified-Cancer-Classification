@@ -1,0 +1,17 @@
+/* App container styles */
+.app-content {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+  }
+  
+  .app-content.visible {
+    opacity: 1;
+  }
+  
+  .no-scroll {
+    overflow: hidden;
+    height: 100vh;
+  }

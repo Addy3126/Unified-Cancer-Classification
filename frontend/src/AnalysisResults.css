@@ -1,271 +1,335 @@
+.analysis-results-container{
+  position: relative;
+}
+
 /* Server status indicators */
 .server-status-container {
-    margin-top: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.server-status {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.server-status-icon {
+  margin-right: 0.25rem;
+}
+
+.server-status-checking {
+  color: #f59e0b;
+}
+
+.server-status-online {
+  color: #10b981;
+}
+
+.server-status-offline, .server-status-error {
+  color: #ef4444;
+}
+
+.uploaded-image-container {
+  margin-top: 1rem;
+}
+
+.uploaded-image-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.uploaded-image-wrapper {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.uploaded-image {
+  max-width: 100%;
+  height: 16rem;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Results section */
+.results-section {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.hidden-section {
+  display: none;
+}
+
+.results-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* Loading state */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 16rem;
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #3b82f6;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 1rem;
+  color: #4b5563;
+}
+
+/* Error display */
+.error-container {
+  background-color: #fee2e2;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  color: #b91c1c;
+}
+
+.error-content {
+  display: flex;
+}
+
+.error-icon {
+  margin-right: 0.5rem;
+}
+
+.error-title {
+  font-weight: 500;
+}
+
+.error-message {
+  margin-top: 0.25rem;
+}
+
+/* Prediction results */
+.prediction-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Primary prediction */
+.primary-prediction {
+  padding: 1rem;
+  border-radius: 0.375rem;
+}
+
+.primary-prediction-malignant {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.primary-prediction-benign {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.primary-prediction-title {
+  font-weight: 500;
+  font-size: 1.125rem;
+}
+
+.primary-prediction-organ,
+.primary-prediction-assessment {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.confidence-container {
+  margin-top: 0.5rem;
+}
+
+.confidence-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.confidence-bar-background {
+  width: 100%;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  height: 0.625rem;
+}
+
+.confidence-bar-fill {
+  height: 0.625rem;
+  border-radius: 9999px;
+}
+
+.confidence-bar-malignant {
+  background-color: #dc2626;
+}
+
+.confidence-bar-benign {
+  background-color: #10b981;
+}
+
+/* Visualizations */
+.visualizations-section {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.visualizations-title {
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+/* Visualization Tabs - New Styles */
+.viz-tabs-container {
+  margin-bottom: 1rem;
+}
+
+.viz-tabs-header {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.viz-tab-button {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.viz-tab-active {
+  border-bottom: 2px solid #3b82f6;
+  color: #3b82f6;
+}
+
+.viz-tab-inactive {
+  color: #6b7280;
+}
+
+.viz-tab-icon {
+  margin-right: 0.25rem;
+}
+
+.viz-tab-content {
+  margin-top: 1rem;
+}
+
+.viz-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.viz-chart-image {
+  width: 100%;
+  max-width: 28rem;
+}
+
+.viz-chart-caption {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* Alternative classifications */
+.alternatives-section {
+  margin-top: 0.5rem;
+}
+
+.alternatives-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.alternatives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.alternative-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alternative-details {
+  display: flex;
+  align-items: center;
+}
+
+.alternative-name {
+  color: #1f2937;
+}
+
+.alternative-organ {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-left: 0.5rem;
+}
+
+.alternative-confidence {
+  color: #4b5563;
+}
+
+/* Analysis details */
+.details-section {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.375rem;
+}
+
+.details-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.details-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Empty state */
+.empty-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 16rem;
+  color: #9ca3af;
+}
+
+/* Responsive adjustments for analysis results */
+@media (min-width: 768px) {
+  .app-sections {
+    grid-template-columns: 1fr;
   }
-  
-  .server-status {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem;
-  }
-  
-  .server-status-icon {
-    margin-right: 0.25rem;
-  }
-  
-  .server-status-checking {
-    color: #f59e0b;
-  }
-  
-  .server-status-online {
-    color: #10b981;
-  }
-  
-  .server-status-offline, .server-status-error {
-    color: #ef4444;
-  }
-  
-  .uploaded-image-container {
-    margin-top: 1rem;
-  }
-  
-  .uploaded-image-title {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-  
-  .uploaded-image-wrapper {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    overflow: hidden;
-  }
-  
-  .uploaded-image {
-    max-width: 100%;
-    height: 16rem;
-    object-fit: contain;
-    margin: 0 auto;
-    display: block;
-  }
-  
-  /* Results section */
-  .results-section {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  }
-  
-  .hidden-section {
-    display: none;
-  }
-  
-  .results-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 1rem;
-  }
-  
-  /* Loading state */
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 16rem;
-  }
-  
-  .loading-spinner {
-    width: 3rem;
-    height: 3rem;
-    border: 4px solid #3b82f6;
-    border-top: 4px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  .loading-text {
-    margin-top: 1rem;
-    color: #4b5563;
-  }
-  
-  /* Error display */
-  .error-container {
-    background-color: #fee2e2;
-    padding: 1rem;
-    border-radius: 0.375rem;
-    color: #b91c1c;
-  }
-  
-  .error-content {
-    display: flex;
-  }
-  
-  .error-icon {
-    margin-right: 0.5rem;
-  }
-  
-  .error-title {
-    font-weight: 500;
-  }
-  
-  .error-message {
-    margin-top: 0.25rem;
-  }
-  
-  /* Prediction results */
-  .prediction-results {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  /* Primary prediction */
-  .primary-prediction {
-    padding: 1rem;
-    border-radius: 0.375rem;
-  }
-  
-  .primary-prediction-malignant {
-    background-color: #fee2e2;
-    color: #b91c1c;
-  }
-  
-  .primary-prediction-benign {
-    background-color: #ecfdf5;
-    color: #047857;
-  }
-  
-  .primary-prediction-title {
-    font-weight: 500;
-    font-size: 1.125rem;
-  }
-  
-  .primary-prediction-organ,
-  .primary-prediction-assessment {
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-  }
-  
-  .confidence-container {
-    margin-top: 0.5rem;
-  }
-  
-  .confidence-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.25rem;
-  }
-  
-  .confidence-bar-background {
-    width: 100%;
-    background-color: #e5e7eb;
-    border-radius: 9999px;
-    height: 0.625rem;
-  }
-  
-  .confidence-bar-fill {
-    height: 0.625rem;
-    border-radius: 9999px;
-  }
-  
-  .confidence-bar-malignant {
-    background-color: #dc2626;
-  }
-  
-  .confidence-bar-benign {
-    background-color: #10b981;
-  }
-  
-  /* Visualizations */
-  .visualizations-section {
-    background-color: #f9fafb;
-    padding: 1rem;
-    border-radius: 0.5rem;
-  }
-  
-  .visualizations-title {
-    font-weight: 500;
-    margin-bottom: 0.75rem;
-  }
-  
-  /* Alternative classifications */
-  .alternatives-section {
-    margin-top: 0.5rem;
-  }
-  
-  .alternatives-title {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-  
-  .alternatives-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .alternative-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .alternative-name {
-    color: #1f2937;
-  }
-  
-  .alternative-organ {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-left: 0.5rem;
-  }
-  
-  .alternative-confidence {
-    color: #4b5563;
-  }
-  
-  /* Analysis details */
-  .details-section {
-    background-color: #f9fafb;
-    padding: 1rem;
-    border-radius: 0.375rem;
-  }
-  
-  .details-title {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-  
-  .details-description {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-top: 0.5rem;
-    font-style: italic;
-  }
-  
-  /* Empty state */
-  .empty-results {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 16rem;
-    color: #9ca3af;
-  }
-  
-  /* Responsive adjustments for analysis results */
-  @media (min-width: 768px) {
-    .app-sections {
-      grid-template-columns: 1fr;
-    }
-  }
+}

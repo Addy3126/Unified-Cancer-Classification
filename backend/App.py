@@ -7,6 +7,8 @@ from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
+import matplotlib
+matplotlib.use('Agg')  # Use a non-GUI backend to avoid Tkinter issues
 import matplotlib.pyplot as plt
 import io
 import base64

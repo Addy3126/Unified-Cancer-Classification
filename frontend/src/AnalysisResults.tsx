@@ -67,15 +67,6 @@ const classLabels: Record<string, string> = {
   'oral_scc': 'Oral Squamous Cell Carcinoma'
 };
 
-// // Determine if a class is likely malignant - matching Python backend logic
-// const isMalignantClass = (className: string): boolean => {
-//   const benignClasses = [
-//     'all_benign', 'brain_notumor', 'breast_benign',
-//     'colon_bnt', 'kidney_normal', 'lung_bnt', 'oral_normal'
-//   ];
-//   return !benignClasses.includes(className);
-// };
-
 // Get organ from class name
 const getOrganFromClass = (className: string): string => {
   for (const [organ, classes] of Object.entries(organCategories)) {
@@ -95,57 +86,57 @@ interface VisualizationTabsProps {
 
 const VisualizationTabs: React.FC<VisualizationTabsProps> = ({ prediction, activeTab, setActiveTab }) => {
   return (
-    <div className="mb-4">
-      <div className="flex border-b">
+    <div className="viz-tabs-container">
+      <div className="viz-tabs-header">
         <button
-          className={`px-4 py-2 font-medium text-sm flex items-center ${activeTab === 'bar' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+          className={`viz-tab-button ${activeTab === 'bar' ? 'viz-tab-active' : 'viz-tab-inactive'}`}
           onClick={() => setActiveTab('bar')}
         >
-          <BarChart size={16} className="mr-1" /> Top Classes
+          <BarChart size={16} className="viz-tab-icon" /> Top Classes
         </button>
         <button
-          className={`px-4 py-2 font-medium text-sm flex items-center ${activeTab === 'organ' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+          className={`viz-tab-button ${activeTab === 'organ' ? 'viz-tab-active' : 'viz-tab-inactive'}`}
           onClick={() => setActiveTab('organ')}
         >
-          <Activity size={16} className="mr-1" /> Organ Analysis
+          <Activity size={16} className="viz-tab-icon" /> Organ Analysis
         </button>
         <button
-          className={`px-4 py-2 font-medium text-sm flex items-center ${activeTab === 'pie' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+          className={`viz-tab-button ${activeTab === 'pie' ? 'viz-tab-active' : 'viz-tab-inactive'}`}
           onClick={() => setActiveTab('pie')}
         >
-          <PieChart size={16} className="mr-1" /> Benign vs Malignant
+          <PieChart size={16} className="viz-tab-icon" /> Benign vs Malignant
         </button>
       </div>
 
-      <div className="mt-4">
+      <div className="viz-tab-content">
         {activeTab === 'bar' && (
-          <div className="flex flex-col items-center">
+          <div className="viz-image-container">
             <img
               src={`http://localhost:5000/visualizations/${prediction.visualizations.bar_chart}`}
               alt="Top 5 Predictions Chart"
-              className="w-full max-w-md"
+              className="viz-chart-image"
             />
-            <p className="text-sm text-gray-500 mt-2">Top 5 classification results by confidence</p>
+            <p className="viz-chart-caption">Top 5 classification results by confidence</p>
           </div>
         )}
         {activeTab === 'organ' && (
-          <div className="flex flex-col items-center">
+          <div className="viz-image-container">
             <img
               src={`http://localhost:5000/visualizations/${prediction.visualizations.organ_chart}`}
               alt="Organ Analysis Chart"
-              className="w-full max-w-md"
+              className="viz-chart-image"
             />
-            <p className="text-sm text-gray-500 mt-2">Highest confidence prediction by organ/region</p>
+            <p className="viz-chart-caption">Highest confidence prediction by organ/region</p>
           </div>
         )}
         {activeTab === 'pie' && (
-          <div className="flex flex-col items-center">
+          <div className="viz-image-container">
             <img
               src={`http://localhost:5000/visualizations/${prediction.visualizations.pie_chart}`}
               alt="Benign vs Malignant Chart"
-              className="w-full max-w-md"
+              className="viz-chart-image"
             />
-            <p className="text-sm text-gray-500 mt-2">Aggregate benign vs malignant probability assessment</p>
+            <p className="viz-chart-caption">Aggregate benign vs malignant probability assessment</p>
           </div>
         )}
       </div>
@@ -181,7 +172,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const [activeVisTab, setActiveVisTab] = useState<string>('bar');
 
   return (
-    <>
+    <div className="analysis-results-container">
       {/* Backend status indicator */}
       <div className="server-status-container">
         {serverStatus === 'checking' && (
@@ -334,7 +325,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -105,81 +105,82 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({ onImageSelected }) =>
 
   return (
     <>
-      <img src=".\public\transparent.png" alt="transparent" style={{height:'100vh', width:'100%', pointerEvents:'none', zIndex:'-10'}}/>
+      {/* <img src=".\transparent.png" alt="transparent" style={{height:'100vh', width:'100%', pointerEvents:'none', zIndex:'-10'}}/> */}
       <div className=" inputConMain">
-        <div className="inputAreaContent">
-          <h2 className="inputConMainTitle">Image Upload</h2>
-          <p>Drag and drop your medical image here or click the input dialog to browse an image from device.</p>
-          <p>Supported formats: JPEG, PNG (max 10MB)</p>
+        <div className="inputConInner">
+          <div className="inputAreaContent">
+            <h2 className="inputConMainTitle">Image Upload</h2>
+            <p>Drag and drop your medical image here or click the input dialog to browse an image from device.</p>
+            <p>Supported formats: JPEG, PNG (max 10MB)</p>
 
-            {/* Image details */}
-            {selectedImage && (
-              <div className="bg-gray-50 p-3 rounded text-sm text-gray-600">
-                <h2 style={{marginTop:"1.6em"}}>
-                  Image Details
-                </h2>
-                <p>
-                  <strong>File:</strong> {selectedImage.name}
-                </p>
-                {/* We don't have the full File object now, but we can display the name and URL */}
-                <p><strong>Preview URL:</strong></p>
-                <p style={{maxWidth:'500px', overflowX:'scroll'}}> {selectedImage.url}</p>
-              </div>
-            )}
+              {/* Image details */}
+              {selectedImage && (
+                <div className="bg-gray-50 p-3 rounded text-sm text-gray-600">
+                  <h2 style={{marginTop:"1.6em"}}>
+                    Image Details
+                  </h2>
+                  <p>
+                    <strong>File:</strong> {selectedImage.name}
+                  </p>
+                  {/* We don't have the full File object now, but we can display the name and URL */}
+                  <p><strong>Preview URL:</strong></p>
+                  <p style={{maxWidth:'500px', overflowX:'scroll'}}> {selectedImage.url}</p>
+                </div>
+              )}
 
-        </div>
-
-        {/* Main upload area */}
-        <div className="mainUploadAreaCon">
-          <div
-            className={`mainUploadArea  ${
-              isDragging ? 'inputDraggingTrue' : 'inputDraggingFalse'
-            } mainUploadArea`}
-            onClick={() => fileInputRef.current?.click()}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept=".jpg,.jpeg,.png,.dcm,.tiff"
-              className="hidden"
-            />
-
-            {previewUrl ? (
-              <div className="previewImage relative">
-                <img
-                  src={previewUrl}
-                  alt="Preview"
-                  className="max-w-none max-h-none w-auto h-auto"
-                  style={{ maxWidth: '100%', maxHeight: '100%' }}
-                />
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeImage();
-                  }}
-                  className="imageClearButton"
-                >
-                  <Eraser size={20} /> Clear Image
-                </button>
-              </div>
-            ) : (
-              <>
-                <Images className="inputImageIcon" />
-                <p className="text-[19px] font-[650] uppercase py-2 px-4 rounded-md">
-                  Click to browse
-                </p>
-                <p className="text-gray-400 text-sm mt-1">
-                  or drop files here
-                </p>
-              </>
-            )}
           </div>
-        </div>
 
+          {/* Main upload area */}
+          {/* <div className="mainUploadAreaCon"> */}
+            <div
+              className={`mainUploadArea  ${
+                isDragging ? 'inputDraggingTrue' : 'inputDraggingFalse'
+              } mainUploadArea`}
+              onClick={() => fileInputRef.current?.click()}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept=".jpg,.jpeg,.png,.dcm,.tiff"
+                className="hidden"
+              />
+
+              {previewUrl ? (
+                <div className="previewImage relative">
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="max-w-none max-h-none w-auto h-auto"
+                    style={{ maxWidth: '100%', maxHeight: '100%' }}
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeImage();
+                    }}
+                    className="imageClearButton"
+                  >
+                    <Eraser size={20} /> Clear Image
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Images className="inputImageIcon" />
+                  <p className="text-[19px] font-[650] uppercase py-2 px-4 rounded-md">
+                    Click to browse
+                  </p>
+                  <p className="text-gray-400 text-sm mt-1">
+                    or drop files here
+                  </p>
+                </>
+              )}
+            </div>
+          {/* </div> */}
+        </div>
         {/* Error message */}
         {error && (
           <div className="flex items-center text-red-500 bg-red-50 p-3 rounded">
