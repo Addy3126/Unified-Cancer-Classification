@@ -7,9 +7,8 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     color: #FFF0DC;
-    margin: 10%;
+    margin: 100vh 10% 0 10%;
     padding: 2.5%;
-    margin-top: 100vh;
 }
 .inputConInner{
     min-height: inherit;
@@ -72,26 +71,30 @@
 }
 
 .imageClearButton{
-    position: absolute;
-    bottom: 4.5px;
-    left: 0;
-    border: none;
-    background-color:rgba(247, 52, 52, 0.8);
-    font-size: 15px;
-    font-family: "Montserrat";
-    text-transform: uppercase;
-    font-weight: 600;
-    border-radius: 5px;
-    padding: 5px 15px;
-    display:flex;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    text-indent: 10px;
+    padding: 12px 24px;
+    font-size: 1.2em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     color: white;
+    background: linear-gradient(135deg, #ff5170, #b81e1e);
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.1s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(184, 30, 30, 0.3);
+    margin-left: 10px;
 }
 .imageClearButton:hover{
-    background-color:rgb(247, 52, 52);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184, 30, 30, 0.4);
+}
+.imageClearButton:active{
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(184, 30, 30, 0.3);
 }
 
 .inputImageIcon{
@@ -102,4 +105,89 @@
     height: 300px;
     width: 500px;
     
+}
+.uploadNote {
+    margin-top: 15px;
+    color: #f8d8bb;
+    font-style: italic;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    border-left: 3px solid #FFC78E;
+}
+
+.uploadNote strong {
+    color: #FFC78E;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Analysis button inside ImageUploadArea */
+.analyze-button-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.analyze-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    font-size: 1.2em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+    background: linear-gradient(135deg, #5170ff, #1e3ab8);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(30, 58, 184, 0.3);
+    z-index: 100; /* Ensure button is above other elements */
+    position: relative;
+}
+
+.analyze-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 58, 184, 0.4);
+}
+
+.analyze-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(30, 58, 184, 0.3);
+}
+
+.analyze-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.analyze-button.analyzing {
+    background: linear-gradient(135deg, #5170ff, #7a8fff);
+}
+
+.analyze-icon {
+    margin-right: 10px;
+}
+
+.analyze-icon.spinning {
+    animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Ensure image area is not affected by the backdrop filter */
+.mainUploadArea {
+    position: relative;
+    z-index: 100;
 }

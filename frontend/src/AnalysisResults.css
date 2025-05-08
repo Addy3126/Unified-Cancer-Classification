@@ -1,5 +1,6 @@
 .analysis-results-container{
   position: relative;
+  padding: 10%;
 }
 
 /* Server status indicators */

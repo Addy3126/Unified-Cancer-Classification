@@ -5,6 +5,7 @@ import LandingPage from './LandingPage';
 import AnalysisResults from './AnalysisResults';
 import Loader from './Loader';
 import { ReactLenis, useLenis } from 'lenis/react'
+
 // Backend API URL
 const API_URL = 'http://localhost:5000/api';
 
@@ -35,12 +36,14 @@ function App(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline' | 'error'>('checking');
   const [showResults, setShowResults] = useState<boolean>(false);
-  // const [modelReady, setModelReady] = useState<boolean>(false);
   
   // App loading state (separate from analysis loading)
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [assetsLoaded, setAssetsLoaded] = useState<boolean>(false);
+
+  // Animation state for analysis
+  const [analyzing, setAnalyzing] = useState<boolean>(false);
 
   //Lenis
   useLenis(() => {
@@ -78,10 +81,24 @@ function App(): JSX.Element {
     checkServerStatus();
   }, [appLoading]);
 
-  const handleImageSelected = async (file: File | null) => {
+  // This function handles the image selection
+  const handleImageSelected = (file: File | null) => {
     if (!file) {
       setPrediction(null);
       setShowResults(false);
+      return;
+    }
+    
+    // Clear previous results when a new image is selected
+    setPrediction(null);
+    setShowResults(false);
+    setError(null);
+  };
+  
+  // Function to handle analysis when button is clicked
+  const handleAnalyzeImage = async (file: File) => {
+    if (!file) {
+      setError("Please select an image first");
       return;
     }
 
@@ -101,10 +118,8 @@ function App(): JSX.Element {
     }
 
     setLoading(true);
-    
+    setAnalyzing(true);
     setError(null);
-    setPrediction(null);
-    setShowResults(false);
 
     try {
       const formData = new FormData();
@@ -131,6 +146,7 @@ function App(): JSX.Element {
       }
     } finally {
       setLoading(false);
+      setAnalyzing(false);
     }
   };
 
@@ -162,11 +178,23 @@ function App(): JSX.Element {
       <div className={`app-content ${!appLoading ? 'visible' : ''}`}>
         <LandingPage 
           onLoadingProgress={handleLoadingProgress} 
-          // onModelReady={() => setModelReady(true)} 
         />
         
         {/* Image upload section */}
-        <ImageUploadArea onImageSelected={handleImageSelected} />
+        <ImageUploadArea 
+          onImageSelected={handleImageSelected}
+          onAnalyzeImage={handleAnalyzeImage}
+          analyzing={analyzing}
+        />
+        
+        {/* Analysis Animation */}
+        {analyzing && (
+          <div className="analysis-animation-container">
+            <div className="image-scan-animation">
+              <div className="scan-line"></div>
+            </div>
+          </div>
+        )}
         
         {/* Analysis Results component */}
         <AnalysisResults 
