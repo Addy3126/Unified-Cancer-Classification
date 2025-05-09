@@ -120,102 +120,104 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
   }, [currentFile, onAnalyzeImage]);
 
   return (
-    <div className="inputConMain">
-      <div className="inputConInner">
-        <div className="inputAreaContent">
-          <h2 className="inputConMainTitle">Image Upload</h2>
-          <p>Drag and drop your medical image here or click the input dialog to browse an image from device.</p>
-          <p>Supported formats: JPEG, PNG (max 10MB)</p>
-          <p className="uploadNote">Once your image is uploaded, click the <strong>Analyze Image</strong> button below to start processing.</p>
-        </div>
+    <div className="inputConMainOuter" style={{position: 'relative',padding: '0 10%', width: '100%', marginTop: '100vh'}}>
+      <div className="inputConMain">
+        <div className="inputConInner">
+          <div className="inputAreaContent">
+            <h2 className="inputConMainTitle">Image Upload</h2>
+            <p>Drag and drop your medical image here or click the input dialog to browse an image from device.</p>
+            <br/>
+            <p><b>Supported formats: JPEG, PNG (max 10MB)</b></p>
+            <p className="uploadNote">Once your image is uploaded, click the <strong>Analyze Image</strong> button below to start processing.</p>
+          </div>
 
-        <div
-          className={`mainUploadArea ${
-            isDragging ? 'inputDraggingTrue' : 'inputDraggingFalse'
-          } mainUploadArea`}
-          onClick={() => fileInputRef.current?.click()}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept=".jpg,.jpeg,.png,.dcm,.tiff"
-            className="hidden"
-          />
-
-          {previewUrl ? (
-            <div className="previewImage relative">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="max-w-none max-h-none w-auto h-auto"
-                style={{ maxWidth: '100%', maxHeight: '100%' }}
-              />
-            </div>
-          ) : (
-            <>
-              <Images className="inputImageIcon" />
-              <p className="text-[19px] font-[650] uppercase py-2 px-4 rounded-md">
-                Click to browse
-              </p>
-              <p className="text-gray-400 text-sm mt-1">
-                or drop files here
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-      
-      {/* Error message */}
-      {error && (
-        <div className="flex items-center text-red-500 bg-red-50 p-3 rounded">
-          <AlertCircle size={16} className="mr-2" />
-          <span>{error}</span>
-        </div>
-      )}
-      
-      {/* Analysis Button */}
-      {currentFile && (
-        <div className="analyze-button-container">
-          <button 
-            className={`analyze-button ${analyzing ? 'analyzing' : ''}`}
-            onClick={handleAnalyzeClick}
-            disabled={analyzing}
+          <div
+            className={`mainUploadArea ${
+              isDragging ? 'inputDraggingTrue' : 'inputDraggingFalse'
+            } mainUploadArea`}
+            onClick={() => fileInputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
           >
-            {analyzing ? (
-              <>
-                <RefreshCw className="analyze-icon spinning" />
-                Analyzing Image...
-              </>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".jpg,.jpeg,.png,.dcm,.tiff"
+              className="hidden"
+            />
+
+            {previewUrl ? (
+              <div className="previewImage relative">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="preview-img"
+                />
+              </div>
             ) : (
               <>
-                <Play className="analyze-icon" />
-                Analyze Image
+                <Images className="inputImageIcon" />
+                <p className="browse-text">
+                  Click to browse
+                </p>
+                <p className="drop-text">
+                  or drop files here
+                </p>
               </>
             )}
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              removeImage();
-            }}
-            className="imageClearButton"
-            disabled={analyzing}
+          </div>
+        </div>
+        
+        {/* Error message */}
+        {error && (
+          <div className="error-message">
+            <AlertCircle size={16} className="error-icon" />
+            <span>{error}</span>
+          </div>
+        )}
+        
+        {/* Analysis Button */}
+        {currentFile && (
+          <div className="analyze-button-container">
+            <button 
+              className={`analyze-button ${analyzing ? 'analyzing' : ''}`}
+              onClick={handleAnalyzeClick}
+              disabled={analyzing}
             >
-            <Eraser size={20} /> Clear Image
-          </button>
-        </div>
-      )}
-      
-      {/* Analysis animation for the image area */}
-      {analyzing && selectedImage && (
-        <div className="image-scan-animation">
-          <div className="scan-line"></div>
-        </div>
-      )}
+              {analyzing ? (
+                <>
+                  <RefreshCw className="analyze-icon spinning" />
+                  Analyzing Image...
+                </>
+              ) : (
+                <>
+                  <Play className="analyze-icon" />
+                  Analyze Image
+                </>
+              )}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                removeImage();
+              }}
+              className="imageClearButton"
+              disabled={analyzing}
+              >
+              <Eraser size={20} /> Clear Image
+            </button>
+          </div>
+        )}
+        
+        {/* Analysis animation for the image area */}
+        {analyzing && selectedImage && (
+          <div className="image-scan-animation">
+            <div className="scan-line"></div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

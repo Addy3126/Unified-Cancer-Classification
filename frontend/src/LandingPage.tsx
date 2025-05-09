@@ -233,7 +233,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
       const now = performance.now();
       const elapsed = now - lastFrameTime;
       
-      if (elapsed < 41.66) { // ~24 FPS
+      if (elapsed < 33.33) { // ~30 FPS
         return;
       }
       

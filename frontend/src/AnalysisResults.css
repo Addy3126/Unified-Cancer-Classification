@@ -1,6 +1,6 @@
 .analysis-results-container{
   position: relative;
-  padding: 10%;
+  padding: 2.5% 10%;
 }
 
 /* Server status indicators */
@@ -33,35 +33,16 @@
   color: #ef4444;
 }
 
-.uploaded-image-container {
-  margin-top: 1rem;
-}
-
-.uploaded-image-title {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.uploaded-image-wrapper {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  overflow: hidden;
-}
-
-.uploaded-image {
-  max-width: 100%;
-  height: 16rem;
-  object-fit: contain;
-  margin: 0 auto;
-  display: block;
-}
-
 /* Results section */
 .results-section {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(230, 230, 230, 0.1);
+  border-radius: 16px;
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  color: #FFF0DC;
+  padding: 3.5%;
 }
 
 .hidden-section {
@@ -69,10 +50,10 @@
 }
 
 .results-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1rem;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 2.5rem;
 }
 
 /* Loading state */
@@ -135,34 +116,44 @@
 }
 
 /* Primary prediction */
+.primary-prediction-outer{
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+
 .primary-prediction {
-  padding: 1rem;
-  border-radius: 0.375rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 48.75%;
+  padding: 3.55rem 2.5rem;
+  border-radius: 16px;
 }
 
 .primary-prediction-malignant {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: rgba(254, 226, 226, 0.7);
+  color: rgba(185, 28, 28, 0.9);
 }
 
 .primary-prediction-benign {
-  background-color: #ecfdf5;
-  color: #047857;
+  background-color: rgba(236, 253, 245, 0.7);
+  color: rgb(4, 120, 87);
 }
 
 .primary-prediction-title {
   font-weight: 500;
-  font-size: 1.125rem;
+  font-size: 1.5rem;
 }
 
 .primary-prediction-organ,
 .primary-prediction-assessment {
-  font-size: 0.875rem;
+  /* font-size: 1rem; */
   margin-top: 0.25rem;
 }
 
 .confidence-container {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .confidence-header {
@@ -191,15 +182,54 @@
   background-color: #10b981;
 }
 
+.uploaded-image-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48.75%;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(230, 230, 230, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* .uploaded-image-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+} */
+/* 
+.uploaded-image-wrapper {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  overflow: hidden;
+} */
+
+.uploaded-image {
+  /* max-width: 100%; */
+  height: 15rem;
+  border-radius: 16px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
 /* Visualizations */
 .visualizations-section {
-  background-color: #f9fafb;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(230, 230, 230, 0.8);
+  border-radius: 16px;
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
+  padding: 5% 5% 2.5% 5% ;
+  color: black;
 }
 
 .visualizations-title {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.5rem;
   margin-bottom: 0.75rem;
 }
 
@@ -210,13 +240,14 @@
 
 .viz-tabs-header {
   display: flex;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #ffffff;
+  justify-content: space-around;
 }
 
 .viz-tab-button {
   padding: 0.5rem 1rem;
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: 600;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -225,8 +256,8 @@
 }
 
 .viz-tab-active {
-  border-bottom: 2px solid #3b82f6;
-  color: #3b82f6;
+  border-bottom: 3px solid #131010;
+  color: #131010;
 }
 
 .viz-tab-inactive {
@@ -234,7 +265,7 @@
 }
 
 .viz-tab-icon {
-  margin-right: 0.25rem;
+  margin-right: 0.5rem;
 }
 
 .viz-tab-content {
@@ -245,11 +276,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 35px;
 }
 
 .viz-chart-image {
-  width: 100%;
-  max-width: 28rem;
+  /* width: 90%; */
+  max-height: 60vh;
+  border-radius: 16px;
 }
 
 .viz-chart-caption {
@@ -260,12 +293,16 @@
 
 /* Alternative classifications */
 .alternatives-section {
-  margin-top: 0.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  padding: 2.5%;
+  color: #000000;
 }
 
 .alternatives-title {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 1rem;
 }
 
 .alternatives-list {
@@ -301,14 +338,15 @@
 
 /* Analysis details */
 .details-section {
-  background-color: #f9fafb;
+  background: rgba(255, 255, 255, 0.7);
   padding: 1rem;
-  border-radius: 0.375rem;
+  border-radius: 16px;
 }
 
 .details-title {
   font-weight: 500;
   margin-bottom: 0.5rem;
+  color: #131010;
 }
 
 .details-description {

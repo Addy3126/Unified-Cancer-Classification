@@ -4,10 +4,9 @@
     -webkit-backdrop-filter: blur(20px);
     background: rgba(230, 230, 230, 0.1);
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* border: 1px solid rgba(255, 255, 255, 0.2); */
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     color: #FFF0DC;
-    margin: 100vh 10% 0 10%;
     padding: 2.5%;
 }
 .inputConInner{
@@ -23,7 +22,6 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 .inputAreaContent{
-    width: 40%;
     text-align: left;
     padding: 5%;
 }
@@ -31,8 +29,26 @@
     font-size:2.5em;
     font-weight: 900;
     letter-spacing: 1.5px;
+    margin-bottom: 25px;
 }
 
+.uploadNote {
+    margin-top: 30px;
+    color: #f8d8bb;
+    font-style: italic;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    border-left: 3px solid #FFC78E;
+}
+
+.uploadNote strong {
+    color: #FFC78E;
+}
+
+.hidden {
+    display: none;
+}
 /* .mainUploadAreaCon{
     width: 40%;
     height: 100%;
@@ -49,7 +65,7 @@
     /* border: 1px dashed rgb(214, 214, 211); */
     border-radius: 16px;
     /* min-height: 100%; */
-    width: 30%;
+    width: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -70,33 +86,6 @@
     overflow: hidden;
 }
 
-.imageClearButton{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 24px;
-    font-size: 1.2em;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: white;
-    background: linear-gradient(135deg, #ff5170, #b81e1e);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(184, 30, 30, 0.3);
-    margin-left: 10px;
-}
-.imageClearButton:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(184, 30, 30, 0.4);
-}
-.imageClearButton:active{
-    transform: translateY(1px);
-    box-shadow: 0 2px 10px rgba(184, 30, 30, 0.3);
-}
-
 .inputImageIcon{
     height: 40px;
     width: 40px;
@@ -105,23 +94,6 @@
     height: 300px;
     width: 500px;
     
-}
-.uploadNote {
-    margin-top: 15px;
-    color: #f8d8bb;
-    font-style: italic;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    border-left: 3px solid #FFC78E;
-}
-
-.uploadNote strong {
-    color: #FFC78E;
-}
-
-.hidden {
-    display: none;
 }
 
 /* Analysis button inside ImageUploadArea */
@@ -137,30 +109,30 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 24px;
+    width: 49%;
+    padding: 8px 24px;
     font-size: 1.2em;
     font-weight: 600;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
     letter-spacing: 1px;
-    color: white;
-    background: linear-gradient(135deg, #5170ff, #1e3ab8);
+    color: #FFF0DC;
+    background-color: #b99463;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(30, 58, 184, 0.3);
-    z-index: 100; /* Ensure button is above other elements */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     position: relative;
 }
 
 .analyze-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(30, 58, 184, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .analyze-button:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 10px rgba(30, 58, 184, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .analyze-button:disabled {
@@ -170,7 +142,7 @@
 }
 
 .analyze-button.analyzing {
-    background: linear-gradient(135deg, #5170ff, #7a8fff);
+    background: linear-gradient(135deg, #F0BB78, #a57021);
 }
 
 .analyze-icon {
@@ -179,6 +151,35 @@
 
 .analyze-icon.spinning {
     animation: spin 1.2s linear infinite;
+}
+
+.imageClearButton{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 49%;
+    padding: 8px 24px;
+    font-size: 1.2em;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #d15545;
+    /* background-color: rgb(190, 79, 79); */
+    background: rgba(209, 85, 69, 0.2);
+    border: 2px solid rgb(209, 85, 69);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    margin-left: 1%;
+    text-indent: 12px;
+}
+.imageClearButton:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+.imageClearButton:active{
+    transform: translateY(1px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes spin {
@@ -190,4 +191,36 @@
 .mainUploadArea {
     position: relative;
     z-index: 100;
+}
+.preview-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.browse-text {
+  font-size: 19px;
+  font-weight: 650;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+}
+
+.drop-text {
+  color: #57585a; /* Tailwind's gray-400 */
+  font-size: 0.875rem; /* text-sm */
+  margin-top: 0.25rem;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  color: #ef4444; /* Tailwind's red-500 */
+  background-color: #fef2f2; /* Tailwind's red-50 */
+  padding: 0.75rem;
+  margin-top: 1rem;
+}
+
+.error-icon {
+  margin-right: 0.5rem;
 }

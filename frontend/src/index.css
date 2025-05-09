@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-@tailwind base;
-@tailwind components;
+@import "tailwindcss/preflight";
 @tailwind utilities;
 
 :root {
@@ -10,8 +9,31 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-body{
+body {
   margin: 0;
   padding: 0;
 }
+/* width
+::-webkit-scrollbar {
+  width: 5px;
+  transition: all 1s ease-in-out;
+}
+
+::-webkit-scrollbar-track {
+  background: #131210;
+  transition: all 1s ease-in-out;
+}
+
+::-webkit-scrollbar-track:hover {
+  background: #323232;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #F0BB78;
+  border-radius: 30px;
+  transition: all 1s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar:hover {
+  width: 10px;
+} */

@@ -230,37 +230,35 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     <div className="analysis-results-container">
       {/* Backend status indicator - uses memoized components */}
       <ServerStatusIndicator status={serverStatus} errorMessage={error} />
-      
-      <div className="app-sections">
-        {/* Show uploaded image if available */}
-        {prediction && (
-          <div className="uploaded-image-container">
-            <h3 className="uploaded-image-title">Uploaded Image:</h3>
-            <div className="uploaded-image-wrapper">
-              <img
-                src={uploadedImageUrl}
-                alt="Uploaded for analysis"
-                className="uploaded-image"
-                loading="lazy"
-              />
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Results section */}
       <div className={`results-section ${showResults ? '' : 'hidden-section'}`}>
         <h2 className="results-title">Analysis Results</h2>
-
         {loading && <LoadingIndicator />}
 
         {error && !loading && <ErrorDisplay error={error} />}
-
+        
         {prediction && !loading && (
           <div className="prediction-results">
-            {/* Primary prediction result */}
-            <PrimaryPrediction prediction={prediction} />
+            <div className="primary-prediction-outer">
+              {/* Primary prediction result */}
+              <PrimaryPrediction prediction={prediction} />
 
+              {/* Show uploaded image if available */}
+              {prediction && (
+                <div className="uploaded-image-container">
+                  {/* <h3 className="uploaded-image-title">Uploaded Image:</h3> */}
+                  <div className="uploaded-image-wrapper">
+                    <img
+                      src={uploadedImageUrl}
+                      alt="Uploaded for analysis"
+                      className="uploaded-image"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
             {/* Visualization tabs */}
             <div className="visualizations-section">
               <h3 className="visualizations-title">Visualizations</h3>
@@ -358,9 +356,9 @@ const PrimaryPrediction = memo(({ prediction }: { prediction: PredictionResult }
         : 'primary-prediction-benign'
     }`}
   >
-    <h3 className="primary-prediction-title">
-      {prediction.prediction.readable_name}
-    </h3>
+    <h1 className="primary-prediction-title">
+      Classification: {prediction.prediction.readable_name}
+    </h1>
     <p className="primary-prediction-organ">
       Organ/Region: {prediction.prediction.organ}
     </p>
