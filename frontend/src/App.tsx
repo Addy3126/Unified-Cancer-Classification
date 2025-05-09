@@ -1,10 +1,10 @@
-import './App.css'
-import ImageUploadArea from './ImageUploadArea'
-import { useState, useEffect, JSX } from 'react';
+import './App.css';
+import ImageUploadArea from './ImageUploadArea';
+import { useState, useEffect, useCallback } from 'react';
 import LandingPage from './LandingPage';
 import AnalysisResults from './AnalysisResults';
 import Loader from './Loader';
-import { ReactLenis, useLenis } from 'lenis/react'
+import { ReactLenis } from 'lenis/react';
 
 // Backend API URL
 const API_URL = 'http://localhost:5000/api';
@@ -30,7 +30,7 @@ interface PredictionResult {
   };
 }
 
-function App(): JSX.Element {
+function App() {
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,14 +40,12 @@ function App(): JSX.Element {
   // App loading state (separate from analysis loading)
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  const [assetsLoaded, setAssetsLoaded] = useState<boolean>(false);
+  
+  // Memoize the current image file
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
 
   // Animation state for analysis
   const [analyzing, setAnalyzing] = useState<boolean>(false);
-
-  //Lenis
-  useLenis(() => {
-  });
 
   // Check if the backend is running on component mount
   useEffect(() => {
@@ -81,8 +79,10 @@ function App(): JSX.Element {
     checkServerStatus();
   }, [appLoading]);
 
-  // This function handles the image selection
-  const handleImageSelected = (file: File | null) => {
+  // This function handles the image selection - memoized to prevent unnecessary re-renders
+  const handleImageSelected = useCallback((file: File | null) => {
+    setCurrentFile(file);
+    
     if (!file) {
       setPrediction(null);
       setShowResults(false);
@@ -93,10 +93,10 @@ function App(): JSX.Element {
     setPrediction(null);
     setShowResults(false);
     setError(null);
-  };
+  }, []);
   
-  // Function to handle analysis when button is clicked
-  const handleAnalyzeImage = async (file: File) => {
+  // Function to handle analysis when button is clicked - memoized
+  const handleAnalyzeImage = useCallback(async (file: File) => {
     if (!file) {
       setError("Please select an image first");
       return;
@@ -148,29 +148,28 @@ function App(): JSX.Element {
       setLoading(false);
       setAnalyzing(false);
     }
-  };
+  }, []);
 
-  // Handler for brain model loading progress updates
-  const handleLoadingProgress = (progress: number) => {
+  // Handler for brain model loading progress updates - memoized
+  const handleLoadingProgress = useCallback((progress: number) => {
     setLoadingProgress(progress);
     
     // Only transition when truly at 100%
     if (progress >= 100) {
       // Small delay to ensure model has rendered
       setTimeout(() => {
-        setAssetsLoaded(true);
-        // Remove nested setTimeout and reduce delay
+        // Single timeout with reasonable delay
         setAppLoading(false);
       }, 500);
     }
-  };
+  }, []);
 
   return (
     <ReactLenis root>
       {/* Main application loader */}
       <Loader 
         progress={loadingProgress} 
-        isComplete={assetsLoaded} 
+        isComplete={loadingProgress >= 100} 
         isVisible={appLoading}
       />
       
@@ -185,6 +184,7 @@ function App(): JSX.Element {
           onImageSelected={handleImageSelected}
           onAnalyzeImage={handleAnalyzeImage}
           analyzing={analyzing}
+          currentFile={currentFile}
         />
         
         {/* Analysis Animation */}

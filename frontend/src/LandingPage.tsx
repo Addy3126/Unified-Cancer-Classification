@@ -6,7 +6,6 @@ import './LandingPage.css';
 
 interface LandingPageProps {
   onLoadingProgress: (progress: number) => void;
-  // onModelReady: () => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
@@ -16,13 +15,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
   const animationFrameRef = useRef<number | null>(null);
-  const progressRef = useRef<number>(0);
+  const isDraggingRef = useRef<boolean>(false);
+  const [_isDragging, setIsDragging] = useState<boolean>(false);
+  const isDisposed = useRef<boolean>(false);
+  
+  // Optimize by using refs for mouse position tracking
+  const mouseState = useRef({
+    isDown: false,
+    previousPosition: { x: 0, y: 0 }
+  });
 
   // Handle scroll events
   useEffect(() => {
     const handleScroll = (): void => {
+      if (isDisposed.current) return;
+      
       const position = window.scrollY;
       
       // Calculate opacity based on scroll position
@@ -37,32 +45,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
     
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isDragging]);
+  }, []);
   
   // Initialize Three.js scene
   useEffect(() => {
     if (!mountRef.current) return;
+    isDisposed.current = false;
     
     // Clear any existing elements to prevent duplicates
     while (mountRef.current.firstChild) {
       mountRef.current.removeChild(mountRef.current.firstChild);
     }
     
-    // Simulate progress even if the real progress is stuck
-    const simulateProgressAnimation = () => {
-      if (progressRef.current >= 100) {
-        return;
-      }
-      
-      const increment = Math.max(0.5, (100 - progressRef.current) * 0.05);
-      progressRef.current = Math.min(99, progressRef.current + increment);
-      
-      onLoadingProgress(progressRef.current);
-      animationFrameRef.current = requestAnimationFrame(simulateProgressAnimation);
-    };
-    
-    // Start the progress animation immediately
-    animationFrameRef.current = requestAnimationFrame(simulateProgressAnimation);
+    // Update progress immediately to 10% to indicate we're starting
+    onLoadingProgress(10);
     
     // Initialize scene, camera, and renderer
     const scene = new THREE.Scene();
@@ -71,50 +67,62 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     cameraRef.current = camera;
     
-    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // Use lower pixel ratio for better performance
+    const pixelRatio = Math.min(window.devicePixelRatio, 2);
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: pixelRatio < 2, // Only use antialiasing for lower pixel ratios
+      preserveDrawingBuffer: true, 
+      alpha: true,
+      powerPreference: 'high-performance' // Prioritize performance
+    });
+    renderer.setPixelRatio(pixelRatio);
     rendererRef.current = renderer;
     
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
     
-    // Add lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // Add lights - simplified lighting setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
     directionalLight.position.set(0, 10, 10);
     scene.add(directionalLight);
     
-    const frontLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    frontLight.position.set(0, 0, 10);
-    scene.add(frontLight);
-    
+    // Use a more optimized material with less overhead
     const brainMaterial = new THREE.MeshStandardMaterial({ 
         color: 0xF0BB78,
         roughness: 0.7,
         metalness: 0.4,
         transparent: true,
-        opacity: 1
+        opacity: 1,
+        flatShading: true // Use flat shading for better performance
     });
 
-    // Setup for manual model rotation control
-    let isMouseDown = false;
-    let previousMousePosition = {
-      x: 0,
-      y: 0
-    };
+    // Update progress to indicate scene setup is complete
+    onLoadingProgress(30);
     
     // Load the .obj file
     const objLoader = new OBJLoader();
     objLoader.load(
       '/assets/Brain_v4.obj',
       (object) => {
+        // Optimize geometry before adding to scene
         object.traverse((child) => {
           if (child instanceof THREE.Mesh) {
+            // Simplify geometry if it's very complex
+            if (child.geometry.attributes.position.count > 50000) {
+              // We can't actually simplify here, but in a real app you might want to
+              // use a decimation library or pre-optimize your models
+              console.log("Model is complex - consider pre-optimizing for better performance");
+            }
+            
             child.material = brainMaterial;
             child.geometry.center();
+            
+            // Compute vertex normals for better lighting
+            child.geometry.computeVertexNormals();
           }
         });
 
@@ -136,104 +144,113 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
         // Store a reference to the brain model for animation
         brainRef.current = object;
         
-        // Cancel the simulated progress animation
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
+        // Indicate model loading is complete
+        onLoadingProgress(80);
+        
+        // Final render before signaling completion
+        if (rendererRef.current && sceneRef.current && cameraRef.current) {
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
         }
         
-        requestAnimationFrame(() => {
-          // Force a render
-          if (rendererRef.current && sceneRef.current && cameraRef.current) {
-            rendererRef.current.render(sceneRef.current, cameraRef.current);
+        // Signal completion after a short delay
+        setTimeout(() => {
+          if (!isDisposed.current) {
+            onLoadingProgress(100);
           }
-          
-          // Now signal completion
-          progressRef.current = 100;
-          onLoadingProgress(100);
-        });
+        }, 200);
       },
       // Progress callback
       (xhr) => {
         if (xhr.lengthComputable) {
-          const actualProgress = Math.round((xhr.loaded / xhr.total) * 100);
-          progressRef.current = actualProgress;
-          onLoadingProgress(actualProgress);
+          // Map loading progress from 20-90%
+          const loadProgress = 20 + Math.round((xhr.loaded / xhr.total) * 70);
+          onLoadingProgress(loadProgress);
         }
       },
       // Error callback
       (error) => {
         console.error('An error happened while loading the model:', error);
         
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
-        
         // Even on error, complete the loading to allow the app to continue
-        progressRef.current = 100;
         onLoadingProgress(100);
       }
     );
     
-    // Mouse event listeners
+    // Mouse event handlers - optimized
     const onMouseDown = (event: MouseEvent) => {
+      if (isDisposed.current) return;
+      
       if (event.target === renderer.domElement) {
-        isMouseDown = true;
-        previousMousePosition = {
+        mouseState.current.isDown = true;
+        mouseState.current.previousPosition = {
           x: event.clientX,
           y: event.clientY
         };
         setIsDragging(true);
+        isDraggingRef.current = true;
       }
     };
 
     const onMouseMove = (event: MouseEvent) => {
-      if (isMouseDown && brainRef.current) {
-        const deltaMove = {
-          x: event.clientX - previousMousePosition.x,
-          y: event.clientY - previousMousePosition.y
-        };
+      if (isDisposed.current || !mouseState.current.isDown || !brainRef.current) return;
+      
+      const deltaMove = {
+        x: event.clientX - mouseState.current.previousPosition.x,
+        y: event.clientY - mouseState.current.previousPosition.y
+      };
 
-        const rotationSpeed = 0.005;
-        brainRef.current.rotation.y += deltaMove.x * rotationSpeed;
-        
-        previousMousePosition = {
-          x: event.clientX,
-          y: event.clientY
-        };
-      }
+      const rotationSpeed = 0.005;
+      brainRef.current.rotation.y += deltaMove.x * rotationSpeed;
+      
+      mouseState.current.previousPosition = {
+        x: event.clientX,
+        y: event.clientY
+      };
     };
 
     const onMouseUp = () => {
-      isMouseDown = false;
+      if (isDisposed.current) return;
+      
+      mouseState.current.isDown = false;
       setIsDragging(false);
+      isDraggingRef.current = false;
     };
 
     renderer.domElement.addEventListener('mousedown', onMouseDown);
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
     
-    // Animation loop
+    // Animation loop with frame rate limiting
     let lastFrameTime = performance.now();
-    const isMouseDownRef = { current: false };
-
-    window.addEventListener("mousedown", () => {
-      isMouseDownRef.current = true;
-    });
-
-    window.addEventListener("mouseup", () => {
-      isMouseDownRef.current = false;
-    });
-
+    let frameCount = 0;
+    
     const animate = (): void => {
-      requestAnimationFrame(animate);
-
+      if (isDisposed.current) return;
+      
+      animationFrameRef.current = requestAnimationFrame(animate);
+      
+      // Limit to 30 FPS for better performance
       const now = performance.now();
-      const delta = (now - lastFrameTime) / 1000;
+      const elapsed = now - lastFrameTime;
+      
+      if (elapsed < 41.66) { // ~24 FPS
+        return;
+      }
+      
+      frameCount++;
+      
+      // Only render every other frame when the user is not interacting
+      // This reduces CPU/GPU load significantly
+      if (!isDraggingRef.current && frameCount % 2 !== 0) {
+        return;
+      }
+      
+      const delta = elapsed / 1000;
       lastFrameTime = now;
 
-      // Rotate based on time
-      if (brainRef.current && !isDragging && !isMouseDownRef.current) {
-        const rotationSpeed = 0.0025;
+      // Rotate based on time only when not being dragged
+      if (brainRef.current && !isDraggingRef.current) {
+        const rotationSpeed = 0.03;
         brainRef.current.rotation.y += rotationSpeed * delta;
       }
       
@@ -242,26 +259,46 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
       }
     };
     
-    // Handle window resize
+    // Handle window resize - throttled
+    let resizeTimeout: number | null = null;
     const handleResize = (): void => {
-      if (cameraRef.current && rendererRef.current) {
-        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
-        cameraRef.current.updateProjectionMatrix();
-        rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+      if (isDisposed.current) return;
+      
+      if (resizeTimeout) {
+        window.clearTimeout(resizeTimeout);
       }
+      
+      resizeTimeout = window.setTimeout(() => {
+        if (cameraRef.current && rendererRef.current && mountRef.current) {
+          cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+          cameraRef.current.updateProjectionMatrix();
+          rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+        }
+      }, 100); // Throttle to once per 100ms
     };
     
     window.addEventListener('resize', handleResize);
-    animate();
+    animationFrameRef.current = requestAnimationFrame(animate);
     
     // Cleanup
     return () => {
+      isDisposed.current = true;
+      
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      
+      if (resizeTimeout) {
+        window.clearTimeout(resizeTimeout);
       }
       
       window.removeEventListener('resize', handleResize);
-      renderer.domElement.removeEventListener('mousedown', onMouseDown);
+      
+      if (rendererRef.current?.domElement) {
+        rendererRef.current.domElement.removeEventListener('mousedown', onMouseDown);
+      }
+      
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
       
@@ -269,8 +306,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
         mountRef.current.removeChild(rendererRef.current.domElement);
       }
       
+      // Clean up THREE.js resources
       if (brainRef.current) {
-        scene.remove(brainRef.current);
+        if (sceneRef.current) {
+          sceneRef.current.remove(brainRef.current);
+        }
+        
         brainRef.current.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.geometry.dispose();
@@ -283,7 +324,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
         });
       }
       
-      renderer.dispose();
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+      }
+      
+      // Reset references
+      brainRef.current = null;
+      sceneRef.current = null;
+      rendererRef.current = null;
+      cameraRef.current = null;
     };
   }, [onLoadingProgress]);
 
@@ -326,4 +375,4 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
   );
 };
 
-export default LandingPage;
+export default React.memo(LandingPage);
