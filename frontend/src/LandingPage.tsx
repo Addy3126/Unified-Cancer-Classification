@@ -32,17 +32,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
       if (isDisposed.current) return;
       
       const position = window.scrollY;
-      
-      // Calculate opacity based on scroll position
       const maxScroll = window.innerHeight * 0.5; // 50% of the viewport height 
-      const opacity = Math.max(0, 1 - position / maxScroll);
       
-      // Apply fade effect to title
+      // Title fade (existing)
       if (titleRef.current) {
-        titleRef.current.style.opacity = opacity.toString();
+        titleRef.current.style.opacity = Math.max(0, 1 - position / maxScroll).toString();
+      }
+      
+      // Scroll indicator fade (new) - fade at twice the speed
+      const scrollIndicator = document.querySelector('.scroll-indicator') as HTMLElement | null;
+      if (scrollIndicator) {
+        const scrollIndicatorOpacity = Math.max(0, 1 - (position / (maxScroll * 0.5))); // Half the maxScroll for double speed
+        scrollIndicator.style.opacity = scrollIndicatorOpacity.toString();
+        
+        // Add/remove fading class based on opacity
+        if (scrollIndicatorOpacity <= 0.1) {
+          scrollIndicator.classList.add('scroll-indicator-fading');
+        } else {
+          scrollIndicator.classList.remove('scroll-indicator-fading');
+        }
       }
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -341,10 +352,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoadingProgress }) => {
       {/* Navbar */}
       <div className="navbar">
         <div className="navbar-logo">
-          <Brain size={32}/> UCC
+          <Brain size={28}/> UCC
         </div>
         <button className="navbar-menu-button">
-          <Ellipsis size={42} />
+          <Ellipsis size={45} />
         </button>
       </div>
       

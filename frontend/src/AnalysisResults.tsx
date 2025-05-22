@@ -70,6 +70,7 @@ const organCategories: Record<string, string[]> = {
 };
 
 // Cached class labels for faster lookups - now using a Map for improved lookup performance
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const classLabelsMap = new Map([
   ['all_benign', 'Benign (General)'],
   ['all_early', 'Early Stage Cancer'],
@@ -109,6 +110,7 @@ Object.entries(organCategories).forEach(([organ, classes]) => {
 });
 
 // Get organ from class name - optimized with Map
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getOrganFromClass = (className: string): string => {
   return organLookupMap.get(className) || "Other";
 };
@@ -208,6 +210,7 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = memo(({ prediction, 
 VisualizationTabs.displayName = 'VisualizationTabs';
 
 // Optimized top predictions calculator using memoization
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useTopPredictions = (confidences: Record<string, number> | undefined, n: number = 5) => {
   return useMemo(() => {
     if (!confidences) return [];

@@ -25,7 +25,7 @@
 
 .navbar-logo {
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,7 +39,7 @@
 }
 
 .navbar-menu-button:hover {
-  color: rgba(0, 0, 0, 0.70);
+  color: #ffddb1;
 }
 
 /* Main title styles */
@@ -93,6 +93,11 @@
   animation-iteration-count: 3;
   animation-delay: 5s;
   z-index: 20;
+  transition: opacity 0.5s ease; /* Half the duration of title fade */
+}
+.scroll-indicator-fading {
+  opacity: 0;
+  transition: opacity 0.25s ease; /* Half the duration of title fade */
 }
 
 .scroll-text {
