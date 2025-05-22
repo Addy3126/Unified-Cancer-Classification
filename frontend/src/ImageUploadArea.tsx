@@ -1,11 +1,11 @@
 import React, { useState, useRef, ChangeEvent, DragEvent, useCallback, memo } from 'react';
-import { Images, Eraser, AlertCircle, Play, RefreshCw } from 'lucide-react';
+import { Images, Eraser, AlertCircle, Play } from 'lucide-react';
 import './ImageUploadArea.css';
 
 interface ImageUploadAreaProps {
   onImageSelected: (file: File | null) => void;
   onAnalyzeImage: (file: File) => void;
-  analyzing: boolean;
+  loading: boolean;
   currentFile: File | null;
 }
 
@@ -17,10 +17,10 @@ interface Thumbnail {
 const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({ 
   onImageSelected, 
   onAnalyzeImage,
-  analyzing,
+  loading,
   currentFile
 }) => {
-  const [selectedImage, setSelectedImage] = useState<Thumbnail | null>(null);
+  const [_selectedImage, setSelectedImage] = useState<Thumbnail | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -182,21 +182,12 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
         {currentFile && (
           <div className="analyze-button-container">
             <button 
-              className={`analyze-button ${analyzing ? 'analyzing' : ''}`}
+              className="analyze-button"
               onClick={handleAnalyzeClick}
-              disabled={analyzing}
+              disabled={loading}
             >
-              {analyzing ? (
-                <>
-                  <RefreshCw className="analyze-icon spinning" />
-                  Analyzing Image...
-                </>
-              ) : (
-                <>
-                  <Play className="analyze-icon" />
-                  Analyze Image
-                </>
-              )}
+              <Play className="analyze-icon" />
+              {loading ? 'Analyzing...' : 'Analyze Image'}
             </button>
             <button
               onClick={(e) => {
@@ -204,17 +195,10 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
                 removeImage();
               }}
               className="imageClearButton"
-              disabled={analyzing}
+              disabled={loading}
               >
               <Eraser size={20} /> Clear Image
             </button>
-          </div>
-        )}
-        
-        {/* Analysis animation for the image area */}
-        {analyzing && selectedImage && (
-          <div className="image-scan-animation">
-            <div className="scan-line"></div>
           </div>
         )}
       </div>

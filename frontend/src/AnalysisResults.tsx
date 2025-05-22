@@ -1,6 +1,37 @@
-import { useState, useCallback, useMemo, memo } from 'react';
-import { AlertCircle, AlertTriangle, CheckCircle, PieChart, BarChart, Activity } from 'lucide-react';
+// AnalysisResults.tsx
+import { useState, useCallback, useMemo, memo } from 'react';import { 
+  AlertCircle, 
+  AlertTriangle, 
+  CheckCircle, 
+  PieChart, 
+  BarChart, 
+  Activity, 
+  Info, 
+  List, 
+  FileWarning, 
+  Stethoscope, 
+  Clock, 
+  Heart,
+  MapPin,
+  Gauge
+} from 'lucide-react';
 import './AnalysisResults.css';
+
+// Interface for alternative predictions
+interface AlternativePrediction {
+  readable_name: string;
+  organ: string;
+  confidence: number;
+  brief_info: string;
+}
+
+// Interface for cancer information
+interface CancerInfo {
+  description: string;
+  details: string;
+  patient_implications: string;
+  common_treatments: string;
+}
 
 // Interface for Flask backend response aligned with the Python implementation
 interface PredictionResult {
@@ -21,6 +52,8 @@ interface PredictionResult {
     organ_chart: string;
     pie_chart: string;
   };
+  cancer_info?: CancerInfo;
+  alternatives_info?: AlternativePrediction[];
 }
 
 // Cached organ categories for faster lookups
@@ -203,51 +236,43 @@ interface AnalysisResultsProps {
   serverStatus: 'checking' | 'online' | 'offline' | 'error';
 }
 
-const AnalysisResults: React.FC<AnalysisResultsProps> = ({ 
-  prediction, 
-  loading, 
-  error, 
+const AnalysisResults: React.FC<AnalysisResultsProps> = ({
+  prediction,
+  loading,
+  error,
   showResults,
   serverStatus
 }) => {
   const [activeVisTab, setActiveVisTab] = useState<string>('bar');
-  
+
   // Memoize the uploaded image URL
   const uploadedImageUrl = useMemo(() => {
     return prediction ? `http://localhost:5000/uploads/${prediction.filename}` : '';
   }, [prediction?.filename]);
-  
-  // Get top predictions using the custom hook
-  const topPredictions = useTopPredictions(prediction?.all_confidences, 5);
-  
+
   // Skip rendering completely if no results to show
   if (!showResults && !loading) {
     return null;
   }
 
-  // Render the component - optimized to minimize conditional renders
   return (
     <div className="analysis-results-container">
-      {/* Backend status indicator - uses memoized components */}
+      {/* Backend status indicator */}
       <ServerStatusIndicator status={serverStatus} errorMessage={error} />
 
-      {/* Results section */}
       <div className={`results-section ${showResults ? '' : 'hidden-section'}`}>
         <h2 className="results-title">Analysis Results</h2>
         {loading && <LoadingIndicator />}
 
         {error && !loading && <ErrorDisplay error={error} />}
-        
+
         {prediction && !loading && (
           <div className="prediction-results">
             <div className="primary-prediction-outer">
-              {/* Primary prediction result */}
               <PrimaryPrediction prediction={prediction} />
 
-              {/* Show uploaded image if available */}
               {prediction && (
                 <div className="uploaded-image-container">
-                  {/* <h3 className="uploaded-image-title">Uploaded Image:</h3> */}
                   <div className="uploaded-image-wrapper">
                     <img
                       src={uploadedImageUrl}
@@ -259,7 +284,15 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 </div>
               )}
             </div>
-            {/* Visualization tabs */}
+
+            {/* Medical Information Section */}
+            {prediction.cancer_info && (
+              <CancerInformationSection 
+                cancerInfo={prediction.cancer_info} 
+                isMalignant={prediction.meta.is_malignant} 
+              />
+            )}
+
             <div className="visualizations-section">
               <h3 className="visualizations-title">Visualizations</h3>
               <VisualizationTabs
@@ -269,16 +302,17 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               />
             </div>
 
-            {/* Top 3 alternative predictions */}
-            <AlternativePredictions topPredictions={topPredictions} />
+            <AlternativePredictions alternatives={prediction.alternatives_info} />
 
-            {/* Additional information */}
             <div className="details-section">
               <h3 className="details-title">Analysis Details</h3>
               <p className="details-description">
                 Note: This is an AI-assisted analysis using a ResNet152V2 model and should be reviewed by a medical professional.
                 The system is trained to identify multiple tissue types and conditions across various organs.
               </p>
+              <div className="disclaimer-note">
+                <strong>Medical Disclaimer:</strong> This tool is designed to assist healthcare professionals and is not intended to replace professional medical advice, diagnosis, or treatment.
+              </div>
             </div>
           </div>
         )}
@@ -293,11 +327,57 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   );
 };
 
+// Cancer Information Section Component
+const CancerInformationSection = memo(({
+  cancerInfo
+}: {
+  cancerInfo: CancerInfo;
+  isMalignant: boolean;
+}) => (
+  <div className="cancer-info-section">
+    <h3 className="cancer-info-title">
+      <Info size={20} className="cancer-info-icon" /> Medical Information
+    </h3>
+    <div className="cancer-info-grid">
+      <div className="cancer-info-card">
+        <h4 className="cancer-info-card-title">
+          <FileWarning size={18} className="cancer-info-card-icon" />
+          Description
+        </h4>
+        <p className="cancer-info-card-content">{cancerInfo.description}</p>
+      </div>
+      <div className="cancer-info-card">
+        <h4 className="cancer-info-card-title">
+          <Stethoscope size={18} className="cancer-info-card-icon" />
+          Medical Details
+        </h4>
+        <p className="cancer-info-card-content">{cancerInfo.details}</p>
+      </div>
+      <div className="cancer-info-card">
+        <h4 className="cancer-info-card-title">
+          <Clock size={18} className="cancer-info-card-icon" />
+          Patient Implications
+        </h4>
+        <p className="cancer-info-card-content">{cancerInfo.patient_implications}</p>
+      </div>
+      <div className="cancer-info-card">
+        <h4 className="cancer-info-card-title">
+          <Heart size={18} className="cancer-info-card-icon" />
+          Common Treatment Options
+        </h4>
+        <p className="cancer-info-card-content">{cancerInfo.common_treatments}</p>
+      </div>
+    </div>
+  </div>
+));
+
+CancerInformationSection.displayName = 'CancerInformationSection';
+
 // Memoized sub-components for performance optimization
 
-const ServerStatusIndicator = memo(({ status, errorMessage }: { 
-  status: 'checking' | 'online' | 'offline' | 'error',
-  errorMessage: string | null
+const ServerStatusIndicator = memo(({ status, errorMessage }: {
+  status: 'checking' | 'online' | 'offline' | 'error';
+  errorMessage: string | null;
 }) => (
   <div className="server-status-container">
     {status === 'checking' && (
@@ -348,72 +428,96 @@ const ErrorDisplay = memo(({ error }: { error: string }) => (
 
 ErrorDisplay.displayName = 'ErrorDisplay';
 
-const PrimaryPrediction = memo(({ prediction }: { prediction: PredictionResult }) => (
-  <div
-    className={`primary-prediction ${
-      prediction.meta.is_malignant
-        ? 'primary-prediction-malignant'
-        : 'primary-prediction-benign'
-    }`}
-  >
-    <h1 className="primary-prediction-title">
-      Classification: {prediction.prediction.readable_name}
-    </h1>
-    <p className="primary-prediction-organ">
-      Organ/Region: {prediction.prediction.organ}
-    </p>
-    <p className="primary-prediction-assessment">
-      Assessment: {prediction.meta.is_malignant ? 'Potentially Malignant' : 'Likely Benign'}
-    </p>
-    <div className="confidence-container">
-      <div className="confidence-header">
-        <span>Confidence:</span>
-        <span>{Math.round(prediction.prediction.confidence * 100)}%</span>
-      </div>
-      <div className="confidence-bar-background">
-        <div
-          className={`confidence-bar-fill ${
-            prediction.meta.is_malignant
-              ? 'confidence-bar-malignant'
-              : 'confidence-bar-benign'
-          }`}
-          style={{ width: `${prediction.prediction.confidence * 100}%` }}
-        ></div>
+const PrimaryPrediction = memo(({ prediction }: { prediction: PredictionResult }) => {
+  const isMalignant = prediction.meta.is_malignant;
+  const Icon = isMalignant ? AlertTriangle : CheckCircle;
+  const assessmentText = isMalignant ? 'Potentially Malignant' : 'Likely Benign';
+
+  return (
+    <div
+      className={`primary-prediction ${
+        isMalignant
+          ? 'primary-prediction-malignant'
+          : 'primary-prediction-benign'
+      }`}
+    >
+      <h1 className="primary-prediction-title">
+        <Icon size={24} className="primary-prediction-icon" />
+        Results: {prediction.prediction.readable_name}
+      </h1>
+      <p className="primary-prediction-organ">
+        <MapPin size={20} className="primary-prediction-icon" />
+        Organ/Region: {prediction.prediction.organ}
+      </p>
+      <p className="primary-prediction-assessment">
+        <Activity size={20} className="primary-prediction-icon" />
+        Assessment: {assessmentText}
+      </p>
+      <div className="confidence-container">
+        <div className="confidence-header">
+          <span>
+            <Gauge size={18} className="primary-prediction-icon" />
+            Confidence:
+          </span>
+          <span>{Math.round(prediction.prediction.confidence * 100)}%</span>
+        </div>
+        <div className="confidence-bar-background">
+          <div
+            className={`confidence-bar-fill ${
+              isMalignant
+                ? 'confidence-bar-malignant'
+                : 'confidence-bar-benign'
+            }`}
+            style={{ width: `${prediction.prediction.confidence * 100}%` }}
+          ></div>
+        </div>
       </div>
     </div>
-  </div>
-));
+  );
+});
 
 PrimaryPrediction.displayName = 'PrimaryPrediction';
 
-const AlternativePredictions = memo(({ topPredictions }: { 
-  topPredictions: Array<{class: string, confidence: number}> 
+// Updated AlternativePredictions component
+const AlternativePredictions = memo(({ alternatives }: {
+  alternatives: AlternativePrediction[] | undefined;
 }) => {
-  // Filter out the first prediction and take next 3
-  const alternativePreds = topPredictions.slice(1, 4);
-  
-  // Return null early if no alternatives
-  if (alternativePreds.length === 0) return null;
-  
+  if (!alternatives || alternatives.length === 0) return null;
+
   return (
     <div className="alternatives-section">
-      <h3 className="alternatives-title">Alternative Classifications</h3>
+      <h3 className="alternatives-title">
+        <List size={18} style={{ marginRight: '8px' }} />
+        Alternative Classifications
+      </h3>
       <div className="alternatives-list">
-        {alternativePreds.map((pred, idx) => (
+        {alternatives.map((alt, idx) => (
           <div key={idx} className="alternative-item">
             <div className="alternative-details">
               <span className="alternative-name">
-                {classLabelsMap.get(pred.class) || pred.class}
+                {alt.readable_name}
               </span>
               <span className="alternative-organ">
-                ({getOrganFromClass(pred.class)})
+                ({alt.organ})
               </span>
             </div>
             <span className="alternative-confidence">
-              {Math.round(pred.confidence * 100)}%
+              {Math.round(alt.confidence * 100)}%
             </span>
           </div>
         ))}
+        {alternatives.length > 0 && (
+          <div style={{
+            marginTop: '12px',
+            fontSize: '0.9rem',
+            backgroundColor: 'rgba(255, 250, 240, 0.6)',
+            padding: '8px',
+            borderRadius: '8px',
+            borderLeft: '3px solid #f59e0b'
+          }}>
+            <strong>Note:</strong> {alternatives[0].brief_info}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -421,5 +525,4 @@ const AlternativePredictions = memo(({ topPredictions }: {
 
 AlternativePredictions.displayName = 'AlternativePredictions';
 
-// Export the memoized component
 export default memo(AnalysisResults);

@@ -44,9 +44,6 @@ function App() {
   // Memoize the current image file
   const [currentFile, setCurrentFile] = useState<File | null>(null);
 
-  // Animation state for analysis
-  const [analyzing, setAnalyzing] = useState<boolean>(false);
-
   // Check if the backend is running on component mount
   useEffect(() => {
     const checkServerStatus = async () => {
@@ -118,7 +115,6 @@ function App() {
     }
 
     setLoading(true);
-    setAnalyzing(true);
     setError(null);
 
     try {
@@ -146,7 +142,6 @@ function App() {
       }
     } finally {
       setLoading(false);
-      setAnalyzing(false);
     }
   }, []);
 
@@ -183,15 +178,16 @@ function App() {
         <ImageUploadArea 
           onImageSelected={handleImageSelected}
           onAnalyzeImage={handleAnalyzeImage}
-          analyzing={analyzing}
+          loading={loading}
           currentFile={currentFile}
         />
         
-        {/* Analysis Animation */}
-        {analyzing && (
-          <div className="analysis-animation-container">
-            <div className="image-scan-animation">
-              <div className="scan-line"></div>
+        {/* Simple Analysis Loader */}
+        {loading && (
+          <div className="analysis-loader-container">
+            <div style={{ textAlign: 'center' }}>
+              <div className="circular-loader"></div>
+              <div className="loader-text">Analyzing Image...</div>
             </div>
           </div>
         )}
